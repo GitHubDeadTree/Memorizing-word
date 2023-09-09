@@ -34,18 +34,5 @@ public class TestController {
         return 1;
     }
 
-    @GetMapping("/getInfo")
-    public ResponseResult<AdminUserInfoVo>getInfo(){
-        return menuService.getInfo();
-    }
-
-    @GetMapping("/getRouters")
-    public ResponseResult<RoutersVo> getRouters(){
-        Long userId = SecurityUtils.getUserId();
-        //查询menu，且结果是tree的形式（即有子菜单）
-        List<Menu> menus = menuService.selectRouterMenuTreeByUserId(userId);
-        //封装数据返回
-        return ResponseResult.okResult(new RoutersVo(menus));
-    }
 
 }
