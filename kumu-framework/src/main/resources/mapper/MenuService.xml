@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.kumu.service.MenuService">
+    <select id="selectRouterMenuTreeByUserId" resultType="com.kumu.domain.entity.Menu"></select>
+    <select id="getInfo" resultType="com.kumu.domain.vo.AdminUserInfoVo"></select>
+</mapper>
