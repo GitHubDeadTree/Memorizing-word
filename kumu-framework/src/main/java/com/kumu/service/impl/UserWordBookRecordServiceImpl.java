@@ -1,6 +1,9 @@
-package service.impl;
+package com.kumu.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.kumu.domain.entity.UserWordBookRecord;
+import com.kumu.mapper.UserWordBookRecordMapper;
+import com.kumu.service.UserWordBookRecordService;
 import org.springframework.stereotype.Service;
 
 /**

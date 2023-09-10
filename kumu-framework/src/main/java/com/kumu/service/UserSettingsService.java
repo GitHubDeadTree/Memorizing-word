@@ -1,4 +1,4 @@
-package service;
+package com.kumu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.kumu.domain.entity.UserSettings;

@@ -1,6 +1,7 @@
-package mapper;
+package com.kumu.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.kumu.domain.entity.WordBookWord;
 import org.apache.ibatis.annotations.Mapper;
 
 

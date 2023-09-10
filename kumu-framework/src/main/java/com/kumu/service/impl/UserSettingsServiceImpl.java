@@ -1,6 +1,9 @@
-package service.impl;
+package com.kumu.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.kumu.domain.entity.UserSettings;
+import com.kumu.service.UserSettingsService;
+import mapper.UserSettingsMapper;
 import org.springframework.stereotype.Service;
 
 /**

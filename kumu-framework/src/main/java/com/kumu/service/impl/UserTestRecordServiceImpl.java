@@ -1,6 +1,9 @@
-package service.impl;
+package com.kumu.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.kumu.domain.entity.UserTestRecord;
+import com.kumu.mapper.UserTestRecordMapper;
+import com.kumu.service.UserTestRecordService;
 import org.springframework.stereotype.Service;
 
 /**

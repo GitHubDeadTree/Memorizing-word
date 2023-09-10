@@ -1,4 +1,4 @@
-package entity;
+package com.kumu.domain.entity;
 
 import java.util.Date;
 
