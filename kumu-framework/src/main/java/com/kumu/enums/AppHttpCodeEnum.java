@@ -2,9 +2,8 @@ package com.kumu.enums;
 
 import org.springframework.stereotype.Repository;
 
-
+//枚举类 AppHttpCodeEnum，它定义了一系列的枚举常量，每个常量都表示一个 HTTP 响应状态码以及与之相关的消息
 public enum AppHttpCodeEnum {
-    // 成功
     // 成功
     SUCCESS(200, "操作成功"),
     // 登录
