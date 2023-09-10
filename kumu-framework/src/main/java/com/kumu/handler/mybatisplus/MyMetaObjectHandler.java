@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
+//在插入数据时可以自动填充
 @Component
 public class MyMetaObjectHandler implements MetaObjectHandler {
     @Override

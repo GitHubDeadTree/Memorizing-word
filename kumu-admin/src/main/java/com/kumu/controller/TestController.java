@@ -30,8 +30,8 @@ public class TestController {
     private BlogLoginService blogLoginService;
 
     @PostMapping("/test")
-    public int Test(){
-        return 1;
+    public Object Test(){
+        return "测试成功";
     }
 
 
