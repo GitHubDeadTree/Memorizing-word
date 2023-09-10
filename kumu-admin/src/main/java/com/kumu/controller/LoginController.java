@@ -30,7 +30,7 @@ public class LoginController {
     @Autowired
     private BlogLoginService blogLoginService;
 
-    @PostMapping("/user/login")
+    @PostMapping("/login")
     public ResponseResult login(@RequestBody User user){
         if(!StringUtils.hasText(user.getUserName())){
             //提示 必须要传用户名
