@@ -23,8 +23,6 @@ import java.util.List;
 @RestController
 public class TestController {
     @Autowired
-    private LoginService loginService;
-    @Autowired
     private MenuService menuService;
     @Autowired
     private BlogLoginService blogLoginService;

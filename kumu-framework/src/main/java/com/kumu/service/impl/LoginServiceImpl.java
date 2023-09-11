@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
@@ -28,7 +29,14 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public ResponseResult logout() {
-        return null;
+        //解析token 获取userId
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        LoginUser loginUser = (LoginUser) authentication.getPrincipal();
+        Long userId = loginUser.getUser().getId();
+        //System.out.println("登出："+userId);
+        //删除redis中的userId
+        redisCache.deleteObject("login:"+ userId);
+        return ResponseResult.okResult();
     }
 
     @Override
@@ -55,7 +63,6 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public ResponseResult register(User user) {
-
 
 
         return null;

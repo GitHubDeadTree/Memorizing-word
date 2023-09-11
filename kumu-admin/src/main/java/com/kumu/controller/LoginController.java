@@ -24,6 +24,7 @@ import java.util.List;
 @RestController
 public class LoginController {
     @Autowired
+    @Qualifier("loginServiceImpl")
     private LoginService loginService;
     @Autowired
     private MenuService menuService;

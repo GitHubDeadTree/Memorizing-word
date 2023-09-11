@@ -15,5 +15,5 @@ import java.util.List;
  */
 @Mapper
 public interface RoleMapper extends BaseMapper<Role> {
-    List<String> selectRoleKeyByUserId(Long id);
+    List<String> selectRoleKeyByUserId(Long id); //自定义的sql方法
 }

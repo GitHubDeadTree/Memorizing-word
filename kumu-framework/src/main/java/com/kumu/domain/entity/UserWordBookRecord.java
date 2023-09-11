@@ -12,7 +12,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
  * (UserWordBookRecord)表实体类
  *
  * @author makejava
- * @since 2023-09-10 21:23:35
+ * @since 2023-09-11 15:50:11
  */
 @SuppressWarnings("serial")
 @Data
@@ -21,10 +21,12 @@ import com.baomidou.mybatisplus.annotation.TableName;
 @TableName("user_word_book_record")
 public class UserWordBookRecord  {
     @TableId
-    private Long userid;
-    @TableId
-    private Integer wordbookid;
+    private Integer id;
 
+    
+    private Long userid;
+    
+    private Integer wordbookid;
     //创建人的用户id
     private Long createBy;
     //创建时间
