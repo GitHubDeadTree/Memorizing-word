@@ -28,11 +28,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         if (!StringUtils.hasText(user.getPassword())){
             throw new SystemException(AppHttpCodeEnum.PASSWORD_NOT_NULL);
-        }if (!StringUtils.hasText(user.getEmail())){
-            throw new SystemException(AppHttpCodeEnum.EMAIL_NOT_NULL);
-        }if (!StringUtils.hasText(user.getNickName())){
-            throw new SystemException(AppHttpCodeEnum.NICKNAME_NOT_NULL);
         }
+//        if (!StringUtils.hasText(user.getEmail())){
+//            throw new SystemException(AppHttpCodeEnum.EMAIL_NOT_NULL);
+//        }
+//        if (!StringUtils.hasText(user.getNickName())){
+//            throw new SystemException(AppHttpCodeEnum.NICKNAME_NOT_NULL);
+//        }
         //判重
         if (userNameExist(user.getUserName())){
             throw new SystemException(AppHttpCodeEnum.USERNAME_EXIST);

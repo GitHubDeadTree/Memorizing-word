@@ -27,35 +27,41 @@ public class LoginController {
     private LoginService loginService;
     @Autowired
     private MenuService menuService;
-    @Autowired
-    private BlogLoginService blogLoginService;
 
+    @PostMapping("/register")
+    public ResponseResult register(@RequestBody User user){
+        if(!StringUtils.hasText(user.getUserName())){
+            //提示 必须要传用户名
+            throw new SystemException(AppHttpCodeEnum.REQUIRE_USERNAME);
+        }
+        return loginService.login(user);
+    }
     @PostMapping("/login")
     public ResponseResult login(@RequestBody User user){
         if(!StringUtils.hasText(user.getUserName())){
             //提示 必须要传用户名
             throw new SystemException(AppHttpCodeEnum.REQUIRE_USERNAME);
         }
-        return blogLoginService.login(user);
+        return loginService.login(user);
     }
-    @PostMapping("/user/logout")
+    @PostMapping("/logout")
     public ResponseResult loginOut(){
         //System.out.println("controller: 登出");
-        return blogLoginService.logout();
+        return loginService.logout();
     }
 
-    @GetMapping("/getInfo")
-    public ResponseResult<AdminUserInfoVo>getInfo(){
-        return menuService.getInfo();
-    }
-
-    @GetMapping("/getRouters")
-    public ResponseResult<RoutersVo> getRouters(){
-        Long userId = SecurityUtils.getUserId();
-        //查询menu，且结果是tree的形式（即有子菜单）
-        List<Menu> menus = menuService.selectRouterMenuTreeByUserId(userId);
-        //封装数据返回
-        return ResponseResult.okResult(new RoutersVo(menus));
-    }
+//    @GetMapping("/getInfo")
+//    public ResponseResult<AdminUserInfoVo>getInfo(){
+//        return menuService.getInfo();
+//    }
+//
+//    @GetMapping("/getRouters")
+//    public ResponseResult<RoutersVo> getRouters(){
+//        Long userId = SecurityUtils.getUserId();
+//        //查询menu，且结果是tree的形式（即有子菜单）
+//        List<Menu> menus = menuService.selectRouterMenuTreeByUserId(userId);
+//        //封装数据返回
+//        return ResponseResult.okResult(new RoutersVo(menus));
+//    }
 
 }

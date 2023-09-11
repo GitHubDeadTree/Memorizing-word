@@ -43,7 +43,7 @@ public class User implements Serializable  {
     //用户性别（0男，1女，2未知）
     private String sex;
     //头像
-    private String avatar;
+    //private String avatar;
     //创建人的用户id
     @TableField(fill = FieldFill.INSERT)
     private Long createBy;
