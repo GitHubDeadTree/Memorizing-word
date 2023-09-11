@@ -37,7 +37,7 @@ public class BlogLoginServiceImpl implements BlogLoginService {
         }
         //获取userid 生成token
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
-        String userId = loginUser.getUser().getId().toString();
+        String userId = loginUser.getUser().getUserID().toString();
         String token = JwtUtil.createJWT(userId); //加密后的用户名就是token
         //把用户信息存入redis
         System.out.println("登录: "+userId);
@@ -53,7 +53,7 @@ public class BlogLoginServiceImpl implements BlogLoginService {
         //解析token 获取userId
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-        Long userId = loginUser.getUser().getId();
+        Long userId = loginUser.getUser().getUserID();
         System.out.println("登出："+userId);
         //删除redis中的userId
         redisCache.deleteObject("bloglogin:"+ userId);

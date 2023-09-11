@@ -15,34 +15,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 @Service("userService") //作为名为 "userService" 的 Bean 注册到 Spring 容器中，
-public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+public class UserServiceImpl extends ServiceImpl<UserMapper, User>  implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
     private UtilsServiceImpl utilsService;
     @Override
     public ResponseResult register(User user) {
-        //对数据进行非空判断
-        if (!StringUtils.hasText(user.getUserName())){
-            throw new SystemException(AppHttpCodeEnum.REQUIRE_USERNAME);
+        //判断非空
+        if(!StringUtils.hasText(user.getUserName())){
+            throw new SystemException(AppHttpCodeEnum.USERNAME_NOT_NULL);
         }
-        if (!StringUtils.hasText(user.getPassword())){
+        if(!StringUtils.hasText(user.getPassword())){
             throw new SystemException(AppHttpCodeEnum.PASSWORD_NOT_NULL);
         }
-//        if (!StringUtils.hasText(user.getEmail())){
-//            throw new SystemException(AppHttpCodeEnum.EMAIL_NOT_NULL);
-//        }
-//        if (!StringUtils.hasText(user.getNickName())){
-//            throw new SystemException(AppHttpCodeEnum.NICKNAME_NOT_NULL);
-//        }
-        //判重
-        if (userNameExist(user.getUserName())){
+        //判断重复
+        if(userNameExist(user.getUserName())){
             throw new SystemException(AppHttpCodeEnum.USERNAME_EXIST);
         }
-
-        //加密密码
-        String encode = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encode);
+        //加密处理
+        String encodePassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodePassword);
         //存入数据库
         save(user);
         return ResponseResult.okResult();

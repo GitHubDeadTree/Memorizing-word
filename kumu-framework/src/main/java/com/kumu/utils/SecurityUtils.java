@@ -23,11 +23,11 @@ public class SecurityUtils
     }
 
     public static Boolean isAdmin(){
-        Long id = getLoginUser().getUser().getId();
+        Long id = getLoginUser().getUser().getUserID();
         return id != null && 1L == id;
     }
 
     public static Long getUserId() {
-        return getLoginUser().getUser().getId();
+        return getLoginUser().getUser().getUserID();
     }
 }

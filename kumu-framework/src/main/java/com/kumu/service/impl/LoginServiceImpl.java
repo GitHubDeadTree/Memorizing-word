@@ -1,10 +1,15 @@
 package com.kumu.service.impl;
 
+import com.baomidou.mybatisplus.core.assist.ISqlRunner;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.kumu.domain.ResponseResult;
 import com.kumu.domain.entity.LoginUser;
 import com.kumu.domain.entity.User;
 import com.kumu.domain.vo.BlogUserLoginVo;
 import com.kumu.domain.vo.UserInfoVo;
+import com.kumu.enums.AppHttpCodeEnum;
+import com.kumu.exception.SystemException;
+import com.kumu.mapper.UserMapper;
 import com.kumu.service.LoginService;
 import com.kumu.utils.BeanCopyUtils;
 import com.kumu.utils.JwtUtil;
@@ -14,12 +19,18 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Objects;
 
 @Service
 public class LoginServiceImpl implements LoginService {
+    @Autowired
+    private UserMapper userMapper; // 假设 User 是您的实体类
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private RedisCache redisCache;
@@ -32,7 +43,7 @@ public class LoginServiceImpl implements LoginService {
         //解析token 获取userId
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
-        Long userId = loginUser.getUser().getId();
+        Long userId = loginUser.getUser().getUserID();
         //System.out.println("登出："+userId);
         //删除redis中的userId
         redisCache.deleteObject("login:"+ userId);
@@ -48,9 +59,10 @@ public class LoginServiceImpl implements LoginService {
         if (Objects.isNull(authenticate)) {
             throw new RuntimeException("用户名或密码错误");
         }
+        System.out.println(user.getUserName()+" "+user.getPassword());
         //获取userid 生成token
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
-        String userId = loginUser.getUser().getId().toString();
+        String userId = loginUser.getUser().getUserID().toString();
         String token = JwtUtil.createJWT(userId); //加密后的用户名就是token
         //把用户信息存入redis
         //System.out.println("登录: "+userId);
@@ -61,10 +73,4 @@ public class LoginServiceImpl implements LoginService {
         return ResponseResult.okResult(vo);
     }
 
-    @Override
-    public ResponseResult register(User user) {
-
-
-        return null;
-    }
 }

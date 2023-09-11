@@ -21,14 +21,18 @@ import com.baomidou.mybatisplus.annotation.TableName;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@TableName("sys_user")
+@TableName("user")
 public class User implements Serializable  {
     //主键@TableId
-    private Long id;
+    //这里的名称要与数据库中的字段名一一对应
+    @TableField(value = "userID")
+    private Long userID;
 
     //用户名
+    @TableField(value = "userName")
     private String userName;
     //昵称
+    @TableField(value = "nickName")
     private String nickName;
     //密码
     private String password;

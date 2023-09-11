@@ -40,7 +40,7 @@ public class SystemLoginServiceImpl implements LoginService{
         }
         //获取userid 生成token
         LoginUser loginUser = (LoginUser) authenticate.getPrincipal();
-        String userId = loginUser.getUser().getId().toString();
+        String userId = loginUser.getUser().getUserID().toString();
         String jwt = JwtUtil.createJWT(userId);
         //把用户信息存入redis
         redisCache.setCacheObject("login:"+userId,loginUser);
@@ -51,8 +51,4 @@ public class SystemLoginServiceImpl implements LoginService{
         return ResponseResult.okResult(map);
     }
 
-    @Override
-    public ResponseResult register(User user) {
-        return null;
-    }
 }

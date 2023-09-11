@@ -38,9 +38,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper,Menu> implements Men
         String username = loginUser.getUsername();
         System.out.println("当前用户是: "+username);
         //根据用户id查询权限
-        List<String> perms = selectPermsByUserId(loginUser.getUser().getId());
+        List<String> perms = selectPermsByUserId(loginUser.getUser().getUserID());
         //根据用户id查询角色
-        List<String> roleKeyList = roleService.selectRoleKeyByUserId(loginUser.getUser().getId());
+        List<String> roleKeyList = roleService.selectRoleKeyByUserId(loginUser.getUser().getUserID());
         //获取用户信息，用于封装成vo
         User user = loginUser.getUser();
         UserInfoVo userInfoVo = BeanCopyUtils.copyBean(user, UserInfoVo.class);
