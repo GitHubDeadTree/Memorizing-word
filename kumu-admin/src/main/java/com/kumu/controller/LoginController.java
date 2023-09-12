@@ -45,7 +45,7 @@ public class LoginController {
         return loginService.login(user);
     }
     @PostMapping("/logout")
-    public ResponseResult loginOut(){
+    public ResponseResult logOut(){
         //System.out.println("controller: 登出");
         return loginService.logout();
     }

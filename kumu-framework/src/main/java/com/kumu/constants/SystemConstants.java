@@ -18,7 +18,6 @@ public class SystemConstants
     /**
      * 单词已记住
      */
-
     public static final int WORD_STATUS_HAVE_REMEMBER = 0;
 
     /**
