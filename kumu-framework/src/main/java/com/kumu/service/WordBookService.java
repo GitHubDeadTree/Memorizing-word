@@ -1,6 +1,7 @@
 package com.kumu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.kumu.domain.ResponseResult;
 import com.kumu.domain.entity.WordBook;
 
 
@@ -12,5 +13,6 @@ import com.kumu.domain.entity.WordBook;
  */
 public interface WordBookService extends IService<WordBook> {
 
+    ResponseResult wordBookList();
 }
 
