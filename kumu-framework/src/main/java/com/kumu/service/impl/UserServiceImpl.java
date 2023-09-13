@@ -9,6 +9,8 @@ import com.kumu.enums.AppHttpCodeEnum;
 import com.kumu.exception.SystemException;
 import com.kumu.mapper.UserMapper;
 import com.kumu.service.UserService;
+import com.kumu.utils.JwtUtil;
+import io.jsonwebtoken.Claims;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -40,6 +42,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>  implements U
         save(user);
         return ResponseResult.okResult();
     }
+
+
 
     private boolean userNameExist(String userName) {
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();

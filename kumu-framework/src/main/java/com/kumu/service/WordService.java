@@ -1,6 +1,7 @@
 package com.kumu.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.kumu.domain.ResponseResult;
 import com.kumu.domain.entity.Word;
 
 
@@ -12,5 +13,8 @@ import com.kumu.domain.entity.Word;
  */
 public interface WordService extends IService<Word> {
 
+    ResponseResult wordList(Integer wordbookid);
+
+    ResponseResult wordList_memorize(Integer wordBookId, Integer memoryNumber);
 }
 
