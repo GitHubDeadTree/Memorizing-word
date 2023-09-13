@@ -47,7 +47,7 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
         {
             wordIdList.add(wordBookWord.getWordid());
         }
-        System.out.println("单词书 "+wordBookId+" 有 "+ wordIdList.size()+" 个单词");
+        //System.out.println("单词书 "+wordBookId+" 有 "+ wordIdList.size()+" 个单词");
         //查询对应的单词 英文 中文 不记得次数 单词状态
         LambdaQueryWrapper<Word> wordLambdaQueryWrapper = new LambdaQueryWrapper<>();
         wordLambdaQueryWrapper.in(Word::getWordid,wordIdList);
@@ -77,7 +77,7 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
     @Override
     public ResponseResult wordList_memorize(Integer wordBookId,Integer memoryNumber) {
         //先查用户不记得的单词，存到表里，再随机查剩余的单词
-
+        int cnt_now=0;  //随机抽取了多少单词
 
         //查询对应单词书的所有单词id
         LambdaQueryWrapper<WordBookWord> queryWrapper = new LambdaQueryWrapper<>();
@@ -108,20 +108,25 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
                 {
                     WordVo wordVo = BeanCopyUtils.copyBean(word, WordVo.class);
                     wordVos.add(wordVo);
+                    cnt_now++;
+                }
+                if (cnt_now>= memoryNumber) {
+                    System.out.println(84615);
+                    return ResponseResult.okResult(wordVos);
                 }
             }
         }
         //从单词列表中随机抽取单词，添加到Vo中
         // 创建一个随机数生成器
         Random random = new Random();
-        int cnt_now=0;  //随机抽取了多少单词
-        while (cnt_now< memoryNumber && cnt_now < wordList.size()-wordVos.size()) {
+        while (cnt_now< memoryNumber && cnt_now < wordList.size()) {
             int randomIndex = random.nextInt(wordList.size());
             // 随机索引获取列表中的元素
             Word word = wordList.get(randomIndex);
             WordVo wordVo = BeanCopyUtils.copyBean(word, WordVo.class);
-            if (wordVos.contains(wordVo) == true) continue;
+            if (wordVos.contains(wordVo)) continue;
             else {
+                System.out.println(wordVo.getWordchinese());
                 wordVos.add(wordVo);
                 cnt_now++;
             }

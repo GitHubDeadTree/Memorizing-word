@@ -20,6 +20,7 @@ public class WordController {
     }
     @GetMapping("/wordList/memory")
     public ResponseResult getWordBookList_memorize(Integer wordBookId,Integer memoryNumber){
+        //System.out.println(111);
         return wordService.wordList_memorize(wordBookId,memoryNumber);
     }
 }
