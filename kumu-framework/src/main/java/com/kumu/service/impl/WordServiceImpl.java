@@ -140,7 +140,8 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
         //查询是否在用户的单词记录中，有的话就修改状态，没有再详细查
         LambdaQueryWrapper<UserWordRecord> wordRecordWrapper = new LambdaQueryWrapper<>();
         String userId = JwtUtil.parseToken();
-        wordRecordWrapper.eq(UserWordRecord::getUserid,userId);
+        wordRecordWrapper.eq(UserWordRecord::getUserid,userId)
+                .eq(UserWordRecord::getWordid,vo.getWordid());
         UserWordRecord userWordRecord = userWordRecordService.getOne(wordRecordWrapper);
         //如果在就直接改，并加appearancecount
         if (userWordRecord != null) {
@@ -156,6 +157,7 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
             userWordRecord.setWordstatus(vo.getWordstatus());
             userWordRecord.setWordid(vo.getWordid());
             userWordRecord.setAppearancecount(1);
+            userWordRecord.setUserid(Long.parseLong(userId));
             userWordRecordService.save(userWordRecord);
             return ResponseResult.okResult();
         }
