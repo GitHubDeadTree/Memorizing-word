@@ -146,19 +146,19 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
         if (userWordRecord != null) {
             // 修改wordstatus
             userWordRecord.setWordstatus(vo.getWordstatus()); // 使用新的状态值替换掉旧的值
+            userWordRecord.setAppearancecount(userWordRecord.getAppearancecount()+1);
             // 保存修改到数据库
             userWordRecordService.updateById(userWordRecord);
+            return ResponseResult.okResult();
         } else {
-            //没有就查单词中英文
-            LambdaQueryWrapper<Word> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(Word::getWordid,vo.getWordid());
-            Word word = getOne(queryWrapper);
+            //没有就新增一个数据
             userWordRecord = new UserWordRecord();
             userWordRecord.setWordstatus(vo.getWordstatus());
             userWordRecord.setWordid(vo.getWordid());
-            //userWordRecord.set
+            userWordRecord.setAppearancecount(1);
+            userWordRecordService.save(userWordRecord);
+            return ResponseResult.okResult();
         }
-        return null;
     }
 }
 
