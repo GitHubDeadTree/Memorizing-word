@@ -18,6 +18,7 @@ import com.kumu.utils.JwtUtil;
 import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sun.java2d.opengl.WGLSurfaceData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -132,6 +133,32 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
             }
         }
         return ResponseResult.okResult(wordVos);
+    }
+
+    @Override
+    public ResponseResult alterWordStatus(WordVo vo) {
+        //查询是否在用户的单词记录中，有的话就修改状态，没有再详细查
+        LambdaQueryWrapper<UserWordRecord> wordRecordWrapper = new LambdaQueryWrapper<>();
+        String userId = JwtUtil.parseToken();
+        wordRecordWrapper.eq(UserWordRecord::getUserid,userId);
+        UserWordRecord userWordRecord = userWordRecordService.getOne(wordRecordWrapper);
+        //如果在就直接改，并加appearancecount
+        if (userWordRecord != null) {
+            // 修改wordstatus
+            userWordRecord.setWordstatus(vo.getWordstatus()); // 使用新的状态值替换掉旧的值
+            // 保存修改到数据库
+            userWordRecordService.updateById(userWordRecord);
+        } else {
+            //没有就查单词中英文
+            LambdaQueryWrapper<Word> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(Word::getWordid,vo.getWordid());
+            Word word = getOne(queryWrapper);
+            userWordRecord = new UserWordRecord();
+            userWordRecord.setWordstatus(vo.getWordstatus());
+            userWordRecord.setWordid(vo.getWordid());
+            //userWordRecord.set
+        }
+        return null;
     }
 }
 
