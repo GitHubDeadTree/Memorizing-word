@@ -72,6 +72,11 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
                 }
             }
         }
+        for (int i=1;i<=wordVos.size();i++)
+        {
+            WordVo wordVo = wordVos.get(i - 1);
+            wordVo.setNumber(i);
+        }
         return ResponseResult.okResult(wordVos);
     }
 
@@ -108,11 +113,12 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
                 if (word.getWordid() == userWordRecord.getWordid() && userWordRecord.getWordstatus() == SystemConstants.WORD_STATUS_NOT_REMEMBER)
                 {
                     WordVo wordVo = BeanCopyUtils.copyBean(word, WordVo.class);
+                    wordVo.setAppearancecount(userWordRecord.getAppearancecount());
                     wordVos.add(wordVo);
                     cnt_now++;
                 }
                 if (cnt_now>= memoryNumber) {
-                    System.out.println(84615);
+                    //System.out.println(84615);
                     return ResponseResult.okResult(wordVos);
                 }
             }
@@ -132,6 +138,11 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
                 cnt_now++;
             }
         }
+        for (int i=1;i<=wordVos.size();i++)
+        {
+            WordVo wordVo = wordVos.get(i - 1);
+            wordVo.setNumber(i);
+        }
         return ResponseResult.okResult(wordVos);
     }
 
@@ -147,7 +158,7 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
         if (userWordRecord != null) {
             // 修改wordstatus
             userWordRecord.setWordstatus(vo.getWordstatus()); // 使用新的状态值替换掉旧的值
-            userWordRecord.setAppearancecount(userWordRecord.getAppearancecount()+1);
+            userWordRecord.setAppearancecount(vo.getAppearancecount());
             // 保存修改到数据库
             userWordRecordService.updateById(userWordRecord);
             return ResponseResult.okResult();

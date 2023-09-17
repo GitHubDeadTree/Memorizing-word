@@ -22,7 +22,7 @@ import java.util.Date;
 public class WordVo {
     @TableId
     private Integer wordid;
-    
+    private Integer number;
     private String wordenglish;
     
     private String wordchinese;

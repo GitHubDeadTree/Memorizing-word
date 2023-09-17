@@ -1,4 +1,4 @@
-package com.kumu.domain.entity;
+package entity;
 
 import java.util.Date;
 
@@ -12,7 +12,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
  * (UserTestRecord)表实体类
  *
  * @author makejava
- * @since 2023-09-10 21:23:13
+ * @since 2023-09-18 00:05:46
  */
 @SuppressWarnings("serial")
 @Data
@@ -23,6 +23,7 @@ public class UserTestRecord  {
     @TableId
     private Integer recordid;
 
+    
     private Long userid;
     
     private Integer wordbookid;
@@ -40,6 +41,12 @@ public class UserTestRecord  {
     private Date updateTime;
     //删除标志（0代表未删除，1代表已删除）
     private Integer delFlag;
+    
+    private Integer wordid;
+    
+    private Integer father;
+    
+    private Integer wordstatus;
 
 
 
