@@ -12,23 +12,21 @@ import com.kumu.service.LoginService;
 import com.kumu.service.MenuService;
 import com.kumu.service.TestService;
 import com.kumu.utils.SecurityUtils;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
+@RequestMapping("/test")
 public class TestController {
     @Autowired
     private TestService testService;
 
-    @PostMapping("/test")
-    public ResponseResult Test(){
-        return testService.test();
+    @GetMapping("/start")
+    public ResponseResult Test(Integer wordBookId, Integer questionCount,Integer percentage,Integer session) {
+        return testService.start(wordBookId,questionCount,percentage,session);
     }
 
 
