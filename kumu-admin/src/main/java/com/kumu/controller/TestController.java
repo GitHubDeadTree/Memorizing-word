@@ -28,6 +28,9 @@ public class TestController {
     public ResponseResult Test(Integer wordBookId, Integer questionCount,Double percentage,Integer session) {
         return testService.start(wordBookId,questionCount,percentage,session);
     }
-
+    @GetMapping("/getTestStatus")
+    public ResponseResult getTestStatus(){
+        return  testService.getTestStatus();
+    }
 
 }

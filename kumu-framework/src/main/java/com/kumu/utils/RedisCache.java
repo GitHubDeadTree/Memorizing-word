@@ -235,4 +235,11 @@ public class RedisCache
     {
         return redisTemplate.keys(pattern);
     }
+
+    /**
+     * 查询redis中是否拥有指定键的缓存
+     */
+    public boolean keyExist(String key) {
+        return redisTemplate.hasKey(key);
+    }
 }

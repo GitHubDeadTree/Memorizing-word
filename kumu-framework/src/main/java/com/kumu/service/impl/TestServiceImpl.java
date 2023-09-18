@@ -89,4 +89,12 @@ public class TestServiceImpl implements TestService {
 
         return ResponseResult.okResult();
     }
+
+    @Override
+    public ResponseResult getTestStatus() {
+        String userId = JwtUtil.parseToken();
+        if (redisCache.keyExist("testList" + userId) == true){
+            return ResponseResult.okResult();
+        }else return ResponseResult.okResult(201,"没有进行中的考试");
+    }
 }
