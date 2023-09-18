@@ -95,7 +95,7 @@ public class TestServiceImpl implements TestService {
     public ResponseResult getTestStatus() {
         String userId = JwtUtil.parseToken();
         if (redisCache.keyExist("testList" + userId) == true){
-            return ResponseResult.okResult("考试进行中");
-        }else return ResponseResult.okResult("没有进行中的考试");
+            return ResponseResult.okResult(201,"考试进行中");
+        }else return ResponseResult.okResult(200,"没有进行中的考试");
     }
 }
