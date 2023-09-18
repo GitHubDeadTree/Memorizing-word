@@ -77,6 +77,7 @@ public class TestServiceImpl implements TestService {
             // 随机索引获取列表中的元素
             QuestionVo questionVo = questionVoList.get(randomIndex);
             questionVo.setQuestionType(SystemConstants.QUESTION_TYPE_LOOK_ENGLISH_WRITE_CHINESE);
+            cnt_now++;
         }
         for (var questonVo : questionVoList) {
             if (questonVo.getQuestionType() == null) questonVo.setQuestionType(SystemConstants.QUESTION_TYPE_LOOK_CHINESE_WRITE_ENGLISH);
@@ -94,7 +95,7 @@ public class TestServiceImpl implements TestService {
     public ResponseResult getTestStatus() {
         String userId = JwtUtil.parseToken();
         if (redisCache.keyExist("testList" + userId) == true){
-            return ResponseResult.okResult();
-        }else return ResponseResult.okResult(201,"没有进行中的考试");
+            return ResponseResult.okResult("考试进行中");
+        }else return ResponseResult.okResult("没有进行中的考试");
     }
 }
