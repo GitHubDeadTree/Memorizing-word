@@ -25,7 +25,7 @@ public class TestController {
     private TestService testService;
 
     @GetMapping("/start")
-    public ResponseResult Test(Integer wordBookId, Integer questionCount,Integer percentage,Integer session) {
+    public ResponseResult Test(Integer wordBookId, Integer questionCount,Double percentage,Integer session) {
         return testService.start(wordBookId,questionCount,percentage,session);
     }
 

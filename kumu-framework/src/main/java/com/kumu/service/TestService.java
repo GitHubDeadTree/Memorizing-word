@@ -5,5 +5,5 @@ import com.kumu.domain.ResponseResult;
 public interface TestService {
     ResponseResult test();
 
-    ResponseResult start(Integer wordBookId, Integer questionCount, Integer percentage, Integer session);
+    ResponseResult start(Integer wordBookId, Integer questionCount, Double percentage, Integer session);
 }
