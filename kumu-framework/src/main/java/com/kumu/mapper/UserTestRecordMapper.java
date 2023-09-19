@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Mapper;
  * (UserTestRecord)表数据库访问层
  *
  * @author makejava
- * @since 2023-09-10 21:23:13
+ * @since 2023-09-19 19:39:17
  */
 @Mapper
 public interface UserTestRecordMapper extends BaseMapper<UserTestRecord> {

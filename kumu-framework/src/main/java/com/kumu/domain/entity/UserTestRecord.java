@@ -12,7 +12,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
  * (UserTestRecord)表实体类
  *
  * @author makejava
- * @since 2023-09-18 00:05:46
+ * @since 2023-09-19 19:39:19
  */
 @SuppressWarnings("serial")
 @Data
@@ -23,6 +23,7 @@ public class UserTestRecord  {
     @TableId
     private Integer recordid;
 
+    
     private Long userid;
     
     private Integer wordbookid;
@@ -46,6 +47,8 @@ public class UserTestRecord  {
     private Integer father;
     
     private Integer wordstatus;
+
+
 
 }
 

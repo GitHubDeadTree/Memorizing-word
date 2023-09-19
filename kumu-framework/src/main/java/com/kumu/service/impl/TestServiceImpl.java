@@ -116,16 +116,18 @@ public class TestServiceImpl implements TestService {
         }
         //存一个答到第几题
         int pointer = 0;
+        String userId = JwtUtil.parseToken();
         //在UserTestRecord中创建母列,指定一个Id
         UserTestRecord userTestRecord = new UserTestRecord();
+        userTestRecord.setUserid(Long.parseLong(userId));
+        userTestRecord.setWordbookid(wordBookId);
         userTestRecordService.save(userTestRecord);
         Integer recordId = userTestRecord.getRecordid();
 
         //把题目列表，指针，母列Id 存入redis中
-        String userId = JwtUtil.parseToken();
         redisCache.setCacheList("testList" + userId,questionVoList);
         redisCache.setCacheObject("testPointer"+userId,pointer);
-        redisCache.setCacheObject("testRow" + userId,recordId);
+        redisCache.setCacheObject("testFather" + userId,recordId);
         redisCache.expire("testList"+userId,session, TimeUnit.SECONDS);
         redisCache.expire("testPointer"+userId,session, TimeUnit.SECONDS);
         Long ttl = redisCache.getTTL("testList" + userId);
