@@ -45,5 +45,9 @@ public class TestController {
     public ResponseResult endTest(){
         return testService.endTest();
     }
+    @GetMapping("/getTestRecord/list")
+    public ResponseResult getTestRecord_list(){
+        return testService.getTestRecord_list();
+    }
 
 }

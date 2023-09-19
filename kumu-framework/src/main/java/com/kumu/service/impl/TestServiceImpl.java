@@ -21,12 +21,11 @@ import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -117,10 +116,27 @@ public class TestServiceImpl implements TestService {
         //存一个答到第几题
         int pointer = 0;
         String userId = JwtUtil.parseToken();
-        //在UserTestRecord中创建母列,指定一个Id
+        //在UserTestRecord中创建母列,指定一个Id，当前时间
         UserTestRecord userTestRecord = new UserTestRecord();
         userTestRecord.setUserid(Long.parseLong(userId));
         userTestRecord.setWordbookid(wordBookId);
+        // 获取当前时间
+        LocalDateTime currentDateTime = LocalDateTime.now();
+
+        // 定义自定义格式
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        // 格式化日期和时间
+        String formattedDateTime = currentDateTime.format(formatter);
+        // 创建一个日期格式化器
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = null;
+        try {
+            date = dateFormat.parse(formattedDateTime);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        userTestRecord.setTestdate(date);
         userTestRecordService.save(userTestRecord);
         Integer recordId = userTestRecord.getRecordid();
 
@@ -178,5 +194,11 @@ public class TestServiceImpl implements TestService {
         redisCache.deleteObject("testPointer"+userId);
         redisCache.deleteObject("testFather" + userId);
         return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult getTestRecord_list() {
+        //返回考试记录的总列表
+        return null;
     }
 }

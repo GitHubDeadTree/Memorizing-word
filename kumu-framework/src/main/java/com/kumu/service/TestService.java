@@ -15,4 +15,6 @@ public interface TestService {
     ResponseResult getResult(TestResultDto testResult);
 
     ResponseResult endTest();
+
+    ResponseResult getTestRecord_list();
 }
