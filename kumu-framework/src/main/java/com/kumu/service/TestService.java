@@ -1,6 +1,7 @@
 package com.kumu.service;
 
 import com.kumu.domain.ResponseResult;
+import com.kumu.domain.dto.TestResultDto;
 
 public interface TestService {
     ResponseResult test();
@@ -10,4 +11,6 @@ public interface TestService {
     ResponseResult getTestStatus();
 
     ResponseResult getQusetion();
+
+    ResponseResult getResult(TestResultDto testResult);
 }

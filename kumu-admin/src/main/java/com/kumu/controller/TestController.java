@@ -1,6 +1,7 @@
 package com.kumu.controller;
 
 import com.kumu.domain.ResponseResult;
+import com.kumu.domain.dto.TestResultDto;
 import com.kumu.domain.entity.Menu;
 import com.kumu.domain.entity.User;
 import com.kumu.domain.vo.AdminUserInfoVo;
@@ -35,6 +36,14 @@ public class TestController {
     @GetMapping("/getQuestion")
     public ResponseResult getQuestion(){
         return  testService.getQusetion();
+    }
+    @PostMapping("/getResult")
+    public ResponseResult getResult(@RequestBody TestResultDto testResult){
+
+
+
+
+        return testService.getResult(testResult);
     }
 
 }

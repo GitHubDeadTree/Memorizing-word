@@ -3,13 +3,13 @@ package com.kumu.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.kumu.constants.SystemConstants;
 import com.kumu.domain.ResponseResult;
+import com.kumu.domain.dto.TestResultDto;
 import com.kumu.domain.entity.UserTestRecord;
 import com.kumu.domain.entity.Word;
 import com.kumu.domain.entity.WordBookWord;
 import com.kumu.domain.vo.QuestionVo;
 import com.kumu.domain.vo.WordVo;
 import com.kumu.enums.AppHttpCodeEnum;
-import com.kumu.mapper.UserTestRecordMapper;
 import com.kumu.service.TestService;
 import com.kumu.service.UserTestRecordService;
 import com.kumu.service.WordBookWordService;
@@ -155,5 +155,10 @@ public class TestServiceImpl implements TestService {
         pointer++;
         redisCache.updateCacheObject("testPointer" + userId,pointer);
         return ResponseResult.okResult(questionVo);
+    }
+
+    @Override
+    public ResponseResult getResult(TestResultDto testResult) {
+        return null;
     }
 }
