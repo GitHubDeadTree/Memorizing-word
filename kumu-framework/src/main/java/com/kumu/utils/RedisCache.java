@@ -242,4 +242,13 @@ public class RedisCache
     public boolean keyExist(String key) {
         return redisTemplate.hasKey(key);
     }
+
+    /**
+     *
+     * 获得键的剩余时间
+     * @return
+     */
+    public Long getTTL(String key) {
+        return redisTemplate.getExpire(key, TimeUnit.SECONDS);
+    }
 }

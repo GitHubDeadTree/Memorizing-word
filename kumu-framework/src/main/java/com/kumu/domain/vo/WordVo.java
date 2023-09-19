@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -19,10 +20,12 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("word")
-public class WordVo {
+public class WordVo implements Serializable {
     @TableId
     private Integer wordid;
+
     private Integer number;
+
     private String wordenglish;
     
     private String wordchinese;

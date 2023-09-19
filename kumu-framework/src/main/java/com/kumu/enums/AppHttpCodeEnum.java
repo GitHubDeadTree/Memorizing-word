@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 public enum AppHttpCodeEnum {
     // 成功
     SUCCESS(200, "操作成功"),
+
+    HAVE_TEST(201,"考试进行中"),
     // 登录
     NEED_LOGIN(401, "需要登录后操作"),
     NO_OPERATOR_AUTH(403, "无权限操作"),

@@ -7,6 +7,7 @@ import com.kumu.domain.entity.Word;
 import com.kumu.domain.entity.WordBookWord;
 import com.kumu.domain.vo.QuestionVo;
 import com.kumu.domain.vo.WordVo;
+import com.kumu.enums.AppHttpCodeEnum;
 import com.kumu.service.TestService;
 import com.kumu.service.WordBookWordService;
 import com.kumu.service.WordService;
@@ -63,9 +64,31 @@ public class TestServiceImpl implements TestService {
         Collections.shuffle(wordList);  //乱序处理单词表
         if (wordList.size()> questionCount) //截取指定数量的单词表
         {
-            wordList = wordList.subList(0, questionCount + 1);
+            wordList = wordList.subList(0, questionCount);
         }
-        List<QuestionVo> questionVoList = BeanCopyUtils.copyBeanList(wordList, QuestionVo.class);
+        //构造questionVoList
+        List<QuestionVo> questionVoList = new ArrayList<>();
+        for (var word : wordList)
+        {
+            //添加正确答案
+            WordVo wordVo = BeanCopyUtils.copyBean(word, WordVo.class);
+            QuestionVo questionVo = new QuestionVo();
+            questionVo.setRightAnswer(wordVo);
+            //添加三个错误答案
+            Random random = new Random();
+            int cnt_now = 0;
+            List<Word> errorAnswerList = new ArrayList<>();
+            while (cnt_now< 3) {
+                int randomIndex = random.nextInt(wordList.size());
+                Word selectedWord = wordList.get(randomIndex);
+                if (selectedWord.getWordid() == word.getWordid() || errorAnswerList.contains(selectedWord)) continue;
+                errorAnswerList.add(selectedWord);
+                cnt_now++;
+            }
+            List<WordVo> errorVoList = BeanCopyUtils.copyBeanList(errorAnswerList, WordVo.class);
+            questionVo.setErrorAnswer(errorVoList);
+            questionVoList.add(questionVo);
+        }
         //根据百分比,指定每个question的类型
         double number = questionVoList.size() * percentage;
         int numberOfTypeOne = (int)number;
@@ -84,18 +107,22 @@ public class TestServiceImpl implements TestService {
         }
         //把列表存入redis中
         String userId = JwtUtil.parseToken();
-
+        //存一个答到第几题
+        int pointer = 0;
         redisCache.setCacheList("testList" + userId,questionVoList);
+        redisCache.setCacheObject("testPointer"+userId,pointer);
         redisCache.expire("testList"+userId,session, TimeUnit.SECONDS);
-
-        return ResponseResult.okResult();
+        redisCache.expire("testPointer"+userId,session, TimeUnit.SECONDS);
+        Long ttl = redisCache.getTTL("testList" + userId);
+        return ResponseResult.okResult(ttl);
     }
 
     @Override
     public ResponseResult getTestStatus() {
         String userId = JwtUtil.parseToken();
         if (redisCache.keyExist("testList" + userId) == true){
-            return ResponseResult.okResult(201,"考试进行中");
+            Long ttl = redisCache.getTTL("testList" + userId);
+            return ResponseResult.okResult(ttl);
         }else return ResponseResult.okResult(200,"没有进行中的考试");
     }
 }
