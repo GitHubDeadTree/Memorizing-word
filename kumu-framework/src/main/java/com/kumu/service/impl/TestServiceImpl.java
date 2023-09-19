@@ -130,6 +130,7 @@ public class TestServiceImpl implements TestService {
         redisCache.setCacheObject("testFather" + userId,recordId);
         redisCache.expire("testList"+userId,session, TimeUnit.SECONDS);
         redisCache.expire("testPointer"+userId,session, TimeUnit.SECONDS);
+        redisCache.expire("testFather"+userId,session, TimeUnit.SECONDS);
         Long ttl = redisCache.getTTL("testList" + userId);
 
 
@@ -159,6 +160,14 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public ResponseResult getResult(TestResultDto testResult) {
-        return null;
+        //把答题结果存到表里 标明father
+        String userId = JwtUtil.parseToken();
+        int father = redisCache.getCacheObject("testFather" + userId);
+        UserTestRecord userTestRecord = new UserTestRecord();
+        userTestRecord.setFather(father);
+        userTestRecord.setWordid(testResult.getWordId());
+        userTestRecord.setWordstatus(testResult.getResult());
+        userTestRecordService.save(userTestRecord);
+        return ResponseResult.okResult();
     }
 }

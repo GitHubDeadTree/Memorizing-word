@@ -39,10 +39,6 @@ public class TestController {
     }
     @PostMapping("/getResult")
     public ResponseResult getResult(@RequestBody TestResultDto testResult){
-
-
-
-
         return testService.getResult(testResult);
     }
 

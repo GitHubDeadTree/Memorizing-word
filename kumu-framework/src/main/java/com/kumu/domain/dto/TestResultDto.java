@@ -9,4 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 
 public class TestResultDto {
+    private int wordId;
+    private int result;
 }
