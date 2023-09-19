@@ -41,5 +41,9 @@ public class TestController {
     public ResponseResult getResult(@RequestBody TestResultDto testResult){
         return testService.getResult(testResult);
     }
+    @GetMapping("/testEnd")
+    public ResponseResult endTest(){
+        return testService.endTest();
+    }
 
 }

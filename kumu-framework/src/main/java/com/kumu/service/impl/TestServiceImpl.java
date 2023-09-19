@@ -170,4 +170,13 @@ public class TestServiceImpl implements TestService {
         userTestRecordService.save(userTestRecord);
         return ResponseResult.okResult();
     }
+
+    @Override
+    public ResponseResult endTest() {
+        String userId = JwtUtil.parseToken();
+        redisCache.deleteObject("testList" + userId);
+        redisCache.deleteObject("testPointer"+userId);
+        redisCache.deleteObject("testFather" + userId);
+        return ResponseResult.okResult();
+    }
 }

@@ -13,4 +13,6 @@ public interface TestService {
     ResponseResult getQusetion();
 
     ResponseResult getResult(TestResultDto testResult);
+
+    ResponseResult endTest();
 }
