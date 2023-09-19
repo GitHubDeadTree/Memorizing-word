@@ -125,4 +125,16 @@ public class TestServiceImpl implements TestService {
             return ResponseResult.okResult(ttl);
         }else return ResponseResult.okResult(200,"没有进行中的考试");
     }
+
+    @Override
+    public ResponseResult getQusetion() {
+        String userId = JwtUtil.parseToken();
+        int pointer = redisCache.getCacheObject("testPointer" + userId);
+        List<QuestionVo> questionVoList = redisCache.getCacheList("testList" + userId);
+        if (pointer>= questionVoList.size()) return ResponseResult.okResult(AppHttpCodeEnum.HAVE_TEST);
+        QuestionVo questionVo = questionVoList.get(pointer);
+        pointer++;
+        redisCache.updateCacheObject("testPointer" + userId,pointer);
+        return ResponseResult.okResult(questionVo);
+    }
 }

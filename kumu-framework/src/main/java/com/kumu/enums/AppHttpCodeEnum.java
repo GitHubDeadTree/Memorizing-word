@@ -7,7 +7,7 @@ public enum AppHttpCodeEnum {
     // 成功
     SUCCESS(200, "操作成功"),
 
-    HAVE_TEST(201,"考试进行中"),
+    HAVE_TEST(201,"例外的情况"),
     // 登录
     NEED_LOGIN(401, "需要登录后操作"),
     NO_OPERATOR_AUTH(403, "无权限操作"),
@@ -26,9 +26,9 @@ public enum AppHttpCodeEnum {
     int code;
     String msg;
 
-    AppHttpCodeEnum(int code, String errorMessage) {
+    AppHttpCodeEnum(int code, String message) {
         this.code = code;
-        this.msg = errorMessage;
+        this.msg = message;
     }
 
     public int getCode() {

@@ -8,4 +8,6 @@ public interface TestService {
     ResponseResult start(Integer wordBookId, Integer questionCount, Double percentage, Integer session);
 
     ResponseResult getTestStatus();
+
+    ResponseResult getQusetion();
 }

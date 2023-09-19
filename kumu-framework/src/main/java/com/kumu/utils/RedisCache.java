@@ -251,4 +251,13 @@ public class RedisCache
     public Long getTTL(String key) {
         return redisTemplate.getExpire(key, TimeUnit.SECONDS);
     }
+    /**
+     * 更新 Redis 中某个键的值。
+     *
+     * @param key   Redis键
+     * @param value 新的值
+     */
+    public void updateCacheObject(String key, Object value) {
+        redisTemplate.opsForValue().set(key, value);
+    }
 }

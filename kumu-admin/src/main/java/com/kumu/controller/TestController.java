@@ -32,5 +32,9 @@ public class TestController {
     public ResponseResult getTestStatus(){
         return  testService.getTestStatus();
     }
+    @GetMapping("/getQuestion")
+    public ResponseResult getQuestion(){
+        return  testService.getQusetion();
+    }
 
 }
