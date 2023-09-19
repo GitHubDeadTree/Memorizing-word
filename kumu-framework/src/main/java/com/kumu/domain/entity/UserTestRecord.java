@@ -23,7 +23,6 @@ public class UserTestRecord  {
     @TableId
     private Integer recordid;
 
-    
     private Long userid;
     
     private Integer wordbookid;
@@ -47,8 +46,6 @@ public class UserTestRecord  {
     private Integer father;
     
     private Integer wordstatus;
-
-
 
 }
 

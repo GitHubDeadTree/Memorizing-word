@@ -12,5 +12,6 @@ import com.kumu.domain.entity.UserTestRecord;
  */
 public interface UserTestRecordService extends IService<UserTestRecord> {
 
+    void save();
 }
 

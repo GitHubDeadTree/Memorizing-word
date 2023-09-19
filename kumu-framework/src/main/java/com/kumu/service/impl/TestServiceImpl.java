@@ -3,12 +3,15 @@ package com.kumu.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.kumu.constants.SystemConstants;
 import com.kumu.domain.ResponseResult;
+import com.kumu.domain.entity.UserTestRecord;
 import com.kumu.domain.entity.Word;
 import com.kumu.domain.entity.WordBookWord;
 import com.kumu.domain.vo.QuestionVo;
 import com.kumu.domain.vo.WordVo;
 import com.kumu.enums.AppHttpCodeEnum;
+import com.kumu.mapper.UserTestRecordMapper;
 import com.kumu.service.TestService;
+import com.kumu.service.UserTestRecordService;
 import com.kumu.service.WordBookWordService;
 import com.kumu.service.WordService;
 import com.kumu.utils.BeanCopyUtils;
@@ -34,6 +37,8 @@ public class TestServiceImpl implements TestService {
     private RedisCache redisCache;
     @Autowired
     private WordService wordService;
+    @Autowired
+    private UserTestRecordService userTestRecordService;
     @Override
     public ResponseResult test() {
         LocalDateTime currentDateTime = LocalDateTime.now();
@@ -44,10 +49,14 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public ResponseResult start(Integer wordBookId, Integer questionCount, Double percentage, Integer session) {
-        //在指定的单词书中 查询指定的单词数量，生成列表，其中题目比例符合 百分比 ，生成的列表存入redis，过期时间为session
+
+        /**
+         * 在指定的单词书中 查询指定的单词数量，生成列表，其中题目比例符合 百分比 ，生成的列表存入redis，过期时间为session
+         * 在UserTestRecord中创建母列,指定一个Id
+         */
+
 
         //在指定的单词书中查询指定数量的乱序单词表
-
         //查询对应单词书的所有单词id
         LambdaQueryWrapper<WordBookWord> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(WordBookWord::getWordbookid,wordBookId);
@@ -105,15 +114,23 @@ public class TestServiceImpl implements TestService {
         for (var questonVo : questionVoList) {
             if (questonVo.getQuestionType() == null) questonVo.setQuestionType(SystemConstants.QUESTION_TYPE_LOOK_CHINESE_WRITE_ENGLISH);
         }
-        //把列表存入redis中
-        String userId = JwtUtil.parseToken();
         //存一个答到第几题
         int pointer = 0;
+        //在UserTestRecord中创建母列,指定一个Id
+        UserTestRecord userTestRecord = new UserTestRecord();
+        userTestRecordService.save(userTestRecord);
+        Integer recordId = userTestRecord.getRecordid();
+
+        //把题目列表，指针，母列Id 存入redis中
+        String userId = JwtUtil.parseToken();
         redisCache.setCacheList("testList" + userId,questionVoList);
         redisCache.setCacheObject("testPointer"+userId,pointer);
+        redisCache.setCacheObject("testRow" + userId,recordId);
         redisCache.expire("testList"+userId,session, TimeUnit.SECONDS);
         redisCache.expire("testPointer"+userId,session, TimeUnit.SECONDS);
         Long ttl = redisCache.getTTL("testList" + userId);
+
+
         return ResponseResult.okResult(ttl);
     }
 
