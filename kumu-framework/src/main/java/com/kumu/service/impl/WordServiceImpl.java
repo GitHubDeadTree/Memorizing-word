@@ -42,14 +42,17 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
     private UserWordRecordService userWordRecordService;
     @Override
     public ResponseResult wordList(Integer wordBookId) {
-        //查询对应单词书的所有单词id
+        // 查询对应单词书的所有单词id
         LambdaQueryWrapper<WordBookWord> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(WordBookWord::getWordbookid,wordBookId);
-        List<WordBookWord> wordBookWords = wordBookWordService.list(queryWrapper);
-        List<Integer> wordIdList = new ArrayList<>();
-        for (WordBookWord wordBookWord : wordBookWords)
-        {
-            wordIdList.add(wordBookWord.getWordid());
+        queryWrapper.eq(WordBookWord::getWordbookid, wordBookId);
+
+        List<Integer> wordIdList = wordBookWordService.list(queryWrapper).stream()
+                //将 WordBookWord 对象中的 wordid 字段提取出来
+                .map(WordBookWord::getWordid)
+                .collect(Collectors.toList());
+
+        if (wordIdList.isEmpty()){
+            throw new SystemException(AppHttpCodeEnum.INPUT_ERROR);
         }
         //System.out.println("单词书 "+wordBookId+" 有 "+ wordIdList.size()+" 个单词");
         //查询对应的单词 英文 中文 不记得次数 单词状态
@@ -173,10 +176,10 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
         } else {
             //没有就新增一个数据
             userWordRecord = new UserWordRecord();
-            userWordRecord.setWordstatus(vo.getWordstatus());
-            userWordRecord.setWordid(vo.getWordid());
-            userWordRecord.setAppearancecount(1);
-            userWordRecord.setUserid(Long.parseLong(userId));
+            userWordRecord.setWordstatus(vo.getWordstatus())
+                          .setWordid(vo.getWordid())
+                          .setAppearancecount(1)
+                          .setUserid(Long.parseLong(userId));
             userWordRecordService.save(userWordRecord);
             return ResponseResult.okResult();
         }

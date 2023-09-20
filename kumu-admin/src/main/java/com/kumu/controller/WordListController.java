@@ -2,13 +2,12 @@ package com.kumu.controller;
 
 import com.kumu.domain.ResponseResult;
 import com.kumu.domain.vo.WordVo;
-import com.kumu.service.WordBookService;
 import com.kumu.service.WordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-public class WordController {
+public class WordListController {
     @Autowired
     private WordService wordService;
 

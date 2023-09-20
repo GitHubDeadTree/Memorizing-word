@@ -4,10 +4,13 @@ import java.util.Date;
 
 import java.io.Serializable;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.experimental.Accessors;
+
 /**
  * (UserWordRecord)表实体类
  *
@@ -19,6 +22,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 @AllArgsConstructor
 @NoArgsConstructor
 @TableName("user_word_record")
+@Accessors(chain = true)
 public class UserWordRecord  {
     @TableId
     private Integer id;

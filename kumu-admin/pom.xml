@@ -47,7 +47,7 @@
                 <version>2.7.1</version>
                 <configuration>
                     <!-- 指定该Main Class为全局的唯一入口 -->
-                    <mainClass>com.kumu.BlogAdminApplication</mainClass>
+                    <mainClass>com.kumu.WordMemorizeApplication</mainClass>
                 </configuration>
                 <executions>
                     <execution>

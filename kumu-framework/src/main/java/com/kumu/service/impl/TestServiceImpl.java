@@ -55,7 +55,9 @@ public class TestServiceImpl implements TestService {
          * 在指定的单词书中 查询指定的单词数量，生成列表，其中题目比例符合 百分比 ，生成的列表存入redis，过期时间为session
          * 在UserTestRecord中创建母列,指定一个Id
          */
-
+        if (!(0<= percentage && percentage<=1)){
+            throw new SystemException(AppHttpCodeEnum.INPUT_ERROR);
+        }
         //在指定的单词书中查询指定数量的乱序单词表
         // 查询对应单词书的所有单词id
 
@@ -185,6 +187,9 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public ResponseResult getResult(TestResultDto testResult) {
+        if (testResult.getResult() != SystemConstants.WORD_STATUS_NOT_REMEMBER && testResult.getResult() != SystemConstants.WORD_STATUS_HAVE_REMEMBER){
+            throw new SystemException(AppHttpCodeEnum.INPUT_ERROR);
+        }
         //把答题结果存到表里 标明father
         String userId = JwtUtil.parseToken();
         int father = redisCache.getCacheObject("testFather" + userId);
