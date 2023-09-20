@@ -19,6 +19,8 @@ public class TestRecordListVo {
 
     private Integer testscore;
 
+    private Integer wordcount;
+
     private Date testdate;
 
 

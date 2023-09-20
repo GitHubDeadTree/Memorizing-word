@@ -2,23 +2,10 @@ package com.kumu.controller;
 
 import com.kumu.domain.ResponseResult;
 import com.kumu.domain.dto.TestResultDto;
-import com.kumu.domain.entity.Menu;
-import com.kumu.domain.entity.User;
-import com.kumu.domain.vo.AdminUserInfoVo;
-import com.kumu.domain.vo.RoutersVo;
-import com.kumu.enums.AppHttpCodeEnum;
-import com.kumu.exception.SystemException;
-import com.kumu.service.BlogLoginService;
-import com.kumu.service.LoginService;
-import com.kumu.service.MenuService;
 import com.kumu.service.TestService;
-import com.kumu.utils.SecurityUtils;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 @RestController
 @RequestMapping("/test")
 public class TestController {
@@ -49,5 +36,8 @@ public class TestController {
     public ResponseResult getTestRecord_list(){
         return testService.getTestRecord_list();
     }
-
+    @GetMapping("/getTestRecord/detail")
+    public ResponseResult getTestRecord_detail(Integer recordId){
+        return testService.getTestRecord_detail(recordId);
+    }
 }

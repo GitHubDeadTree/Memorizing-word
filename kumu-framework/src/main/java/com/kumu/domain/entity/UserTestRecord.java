@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.experimental.Accessors;
+
 /**
  * (UserTestRecord)表实体类
  *
@@ -18,12 +20,14 @@ import com.baomidou.mybatisplus.annotation.TableName;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Accessors(chain = true)
 @TableName("user_test_record")
 public class UserTestRecord  {
     @TableId
     private Integer recordid;
 
-    
+    private Integer wordcount;
+
     private Long userid;
     
     private Integer wordbookid;

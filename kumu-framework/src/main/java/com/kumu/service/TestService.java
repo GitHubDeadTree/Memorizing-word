@@ -17,4 +17,6 @@ public interface TestService {
     ResponseResult endTest();
 
     ResponseResult getTestRecord_list();
+
+    ResponseResult getTestRecord_detail(Integer recordId);
 }

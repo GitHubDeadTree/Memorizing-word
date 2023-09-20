@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 public class TestServiceImpl implements TestService {
@@ -69,7 +70,7 @@ public class TestServiceImpl implements TestService {
 
         // 直接查询 WordBookWord 表并将结果存入 wordIdList
         List<Integer> wordIdList = wordBookWordService.listObjs(queryWrapper, obj -> (Integer) obj);
-        if (wordIdList.isEmpty()){
+        if (wordIdList.isEmpty() || wordIdList.size()< questionCount || wordIdList.size()<4){
             throw new SystemException(AppHttpCodeEnum.INPUT_ERROR);
         }
         // 构建查询 Word 表的查询条件，使用 in 方法查询 wordIdList 中的单词id
@@ -147,7 +148,9 @@ public class TestServiceImpl implements TestService {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-        userTestRecord.setTestdate(date);
+        userTestRecord.setTestdate(date)
+                        .setTestscore(0)
+                        .setWordcount(0);
         userTestRecordService.save(userTestRecord);
         Integer recordId = userTestRecord.getRecordid();
 
@@ -192,22 +195,36 @@ public class TestServiceImpl implements TestService {
         }
         //把答题结果存到表里 标明father
         String userId = JwtUtil.parseToken();
-        int father = redisCache.getCacheObject("testFather" + userId);
+        if (!redisCache.keyExist("testFather" + userId)){
+            throw new SystemException(AppHttpCodeEnum.INPUT_ERROR);
+        }
+        Integer father = redisCache.getCacheObject("testFather" + userId);
+
         UserTestRecord userTestRecord = new UserTestRecord();
-        userTestRecord.setFather(father);
-        userTestRecord.setWordid(testResult.getWordId());
-        userTestRecord.setWordstatus(testResult.getResult());
+        userTestRecord.setFather(father)
+                .setWordid(testResult.getWordId())
+                .setWordstatus(testResult.getResult());
         userTestRecordService.save(userTestRecord);
+        //修改father的单词数量
+        LambdaQueryWrapper<UserTestRecord> testRecordLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        testRecordLambdaQueryWrapper.eq(UserTestRecord::getRecordid,father);
+        UserTestRecord fatherRecord = userTestRecordService.getOne(testRecordLambdaQueryWrapper);
+        fatherRecord.setWordcount(fatherRecord.getWordcount()+1);
+        if (testResult.getResult() == SystemConstants.WORD_STATUS_HAVE_REMEMBER) fatherRecord.setTestscore(fatherRecord.getTestscore()+1);
+        LambdaQueryWrapper<UserTestRecord> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(UserTestRecord::getRecordid,father);
+        userTestRecordService.update(fatherRecord,lambdaQueryWrapper);
         return ResponseResult.okResult();
     }
 
     @Override
     public ResponseResult endTest() {
         String userId = JwtUtil.parseToken();
+        Integer father = redisCache.getCacheObject("testFather" + userId);
         redisCache.deleteObject("testList" + userId);
         redisCache.deleteObject("testPointer"+userId);
         redisCache.deleteObject("testFather" + userId);
-        return ResponseResult.okResult();
+        return getTestRecord_detail(father);
     }
 
     @Override
@@ -219,17 +236,38 @@ public class TestServiceImpl implements TestService {
         testRecordLambdaQueryWrapper.eq(UserTestRecord::getUserid,userId);
         List<UserTestRecord> userTestRecordList = userTestRecordService.list(testRecordLambdaQueryWrapper);
         List<TestRecordListVo> testRecordList = BeanCopyUtils.copyBeanList(userTestRecordList, TestRecordListVo.class);
-        //计算正确率
-        for (var testRecord : testRecordList)
-        {
-            LambdaQueryWrapper<UserTestRecord> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.eq(UserTestRecord::getFather, testRecord.getRecordid());
-            List<UserTestRecord> recordList = userTestRecordService.list(queryWrapper);
-            int total = recordList.size(),rightCnt = 0;
-            for (var record : recordList) {
+        return ResponseResult.okResult(testRecordList);
+    }
 
+    @Override
+    public ResponseResult getTestRecord_detail(Integer recordId) {
+        LambdaQueryWrapper<UserTestRecord> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(UserTestRecord::getFather,recordId);
+        List<UserTestRecord> userTestRecordList = userTestRecordService.list(lambdaQueryWrapper);
+        if (userTestRecordList.isEmpty()){
+            throw new SystemException(AppHttpCodeEnum.INPUT_ERROR);
+        }
+        List<Integer> wordIdList = userTestRecordList.stream()
+                .map(UserTestRecord::getWordid)
+                .collect(Collectors.toList());
+        LambdaQueryWrapper<Word> wordLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        wordLambdaQueryWrapper.in(Word::getWordid,wordIdList);
+        List<Word> wordList = wordService.list(wordLambdaQueryWrapper);
+        List<WordVo> wordVoList = BeanCopyUtils.copyBeanList(wordList, WordVo.class);
+        // 将 userTestRecordList 转换为 HashMap
+        Map<Integer, UserTestRecord> userTestRecordMap = userTestRecordList.stream()
+                .collect(Collectors.toMap(UserTestRecord::getWordid, userTestRecord -> userTestRecord));
+
+        // 在循环中使用 HashMap 查找
+        for (int i=0;i<wordVoList.size();i++) {
+            WordVo wordVo = wordVoList.get(i);
+            wordVo.setNumber(i + 1);
+            UserTestRecord userTestRecord = userTestRecordMap.get(wordVo.getWordid());
+            if (userTestRecord != null) {
+                wordVo.setWordstatus(userTestRecord.getWordstatus());
             }
         }
-        return null;
+
+        return ResponseResult.okResult(wordVoList);
     }
 }
