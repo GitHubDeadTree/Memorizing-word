@@ -8,8 +8,10 @@ import com.kumu.domain.entity.UserTestRecord;
 import com.kumu.domain.entity.Word;
 import com.kumu.domain.entity.WordBookWord;
 import com.kumu.domain.vo.QuestionVo;
+import com.kumu.domain.vo.TestRecordListVo;
 import com.kumu.domain.vo.WordVo;
 import com.kumu.enums.AppHttpCodeEnum;
+import com.kumu.exception.SystemException;
 import com.kumu.service.TestService;
 import com.kumu.service.UserTestRecordService;
 import com.kumu.service.WordBookWordService;
@@ -54,24 +56,30 @@ public class TestServiceImpl implements TestService {
          * 在UserTestRecord中创建母列,指定一个Id
          */
 
-
         //在指定的单词书中查询指定数量的乱序单词表
-        //查询对应单词书的所有单词id
+        // 查询对应单词书的所有单词id
+
         LambdaQueryWrapper<WordBookWord> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(WordBookWord::getWordbookid,wordBookId);
-        List<WordBookWord> wordBookWords = wordBookWordService.list(queryWrapper);
-        List<Integer> wordIdList = new ArrayList<>();
-        for (WordBookWord wordBookWord : wordBookWords)
-        {
-            wordIdList.add(wordBookWord.getWordid());
+        queryWrapper.eq(WordBookWord::getWordbookid, wordBookId);
+
+        // 使用 select 方法来选择需要查询的字段，这里选择了 WordBookWord 表的 wordid 字段
+        queryWrapper.select(WordBookWord::getWordid);
+
+        // 直接查询 WordBookWord 表并将结果存入 wordIdList
+        List<Integer> wordIdList = wordBookWordService.listObjs(queryWrapper, obj -> (Integer) obj);
+        if (wordIdList.isEmpty()){
+            throw new SystemException(AppHttpCodeEnum.INPUT_ERROR);
         }
+        // 构建查询 Word 表的查询条件，使用 in 方法查询 wordIdList 中的单词id
         LambdaQueryWrapper<Word> wordLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        wordLambdaQueryWrapper.in(Word::getWordid,wordIdList);
-        List<Word> wordList = new ArrayList<>();
-        wordList = wordService.list(wordLambdaQueryWrapper);
+        wordLambdaQueryWrapper.in(Word::getWordid, wordIdList);
+
+        // 查询 Word 表并将结果存入 wordList
+        List<Word> wordList = wordService.list(wordLambdaQueryWrapper);
+
         Collections.shuffle(wordList);  //乱序处理单词表
-        if (wordList.size()> questionCount) //截取指定数量的单词表
-        {
+        List<Word> wordList1 = wordList;
+        if (wordList.size()> questionCount){ //截取指定数量的单词表
             wordList = wordList.subList(0, questionCount);
         }
         //构造questionVoList
@@ -86,9 +94,10 @@ public class TestServiceImpl implements TestService {
             Random random = new Random();
             int cnt_now = 0;
             List<Word> errorAnswerList = new ArrayList<>();
+
             while (cnt_now< 3) {
-                int randomIndex = random.nextInt(wordList.size());
-                Word selectedWord = wordList.get(randomIndex);
+                int randomIndex = random.nextInt(wordList1.size());
+                Word selectedWord = wordList1.get(randomIndex);
                 if (selectedWord.getWordid() == word.getWordid() || errorAnswerList.contains(selectedWord)) continue;
                 errorAnswerList.add(selectedWord);
                 cnt_now++;
@@ -197,8 +206,25 @@ public class TestServiceImpl implements TestService {
     }
 
     @Override
-    public ResponseResult getTestRecord_list() {
+    public ResponseResult getTestRecord_list(){
         //返回考试记录的总列表
+        //查询 userId的列表
+        String userId = JwtUtil.parseToken();
+        LambdaQueryWrapper<UserTestRecord> testRecordLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        testRecordLambdaQueryWrapper.eq(UserTestRecord::getUserid,userId);
+        List<UserTestRecord> userTestRecordList = userTestRecordService.list(testRecordLambdaQueryWrapper);
+        List<TestRecordListVo> testRecordList = BeanCopyUtils.copyBeanList(userTestRecordList, TestRecordListVo.class);
+        //计算正确率
+        for (var testRecord : testRecordList)
+        {
+            LambdaQueryWrapper<UserTestRecord> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.eq(UserTestRecord::getFather, testRecord.getRecordid());
+            List<UserTestRecord> recordList = userTestRecordService.list(queryWrapper);
+            int total = recordList.size(),rightCnt = 0;
+            for (var record : recordList) {
+
+            }
+        }
         return null;
     }
 }

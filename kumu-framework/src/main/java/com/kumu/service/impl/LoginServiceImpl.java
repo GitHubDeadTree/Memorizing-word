@@ -52,6 +52,9 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public ResponseResult login(User user) {
+        if (!StringUtils.hasText(user.getUserName()) || !StringUtils.hasText(user.getPassword())){
+            throw new SystemException(AppHttpCodeEnum.INPUT_ERROR);
+        }
         //封装传入的用户名和密码，以便后续使用
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(user.getUserName(),user.getPassword());
         Authentication authenticate = authenticationManager.authenticate(authenticationToken);

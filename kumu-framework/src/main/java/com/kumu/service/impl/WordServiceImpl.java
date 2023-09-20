@@ -6,6 +6,8 @@ import com.kumu.constants.SystemConstants;
 import com.kumu.domain.ResponseResult;
 import com.kumu.domain.entity.*;
 import com.kumu.domain.vo.WordVo;
+import com.kumu.enums.AppHttpCodeEnum;
+import com.kumu.exception.SystemException;
 import com.kumu.mapper.UserWordBookRecordMapper;
 import com.kumu.mapper.WordBookWordMapper;
 import com.kumu.mapper.WordMapper;
@@ -23,6 +25,7 @@ import sun.java2d.opengl.WGLSurfaceData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * (Word)表服务实现类
@@ -85,16 +88,18 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
         //先查用户不记得的单词，存到表里，再随机查剩余的单词
         int cnt_now=0;  //随机抽取了多少单词
 
-        //查询对应单词书的所有单词id
+        // 查询对应单词书的所有单词id
         LambdaQueryWrapper<WordBookWord> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(WordBookWord::getWordbookid,wordBookId);
-        List<WordBookWord> wordBookWords = wordBookWordService.list(queryWrapper);
-        List<Integer> wordIdList = new ArrayList<>();
-        for (WordBookWord wordBookWord : wordBookWords)
-        {
-            wordIdList.add(wordBookWord.getWordid());
+        queryWrapper.eq(WordBookWord::getWordbookid, wordBookId);
+
+        List<Integer> wordIdList = wordBookWordService.list(queryWrapper)
+                .stream()
+                .map(WordBookWord::getWordid)
+                .collect(Collectors.toList());
+        if (wordIdList.isEmpty()){
+            throw new SystemException(AppHttpCodeEnum.INPUT_ERROR);
         }
-        System.out.println("单词书 "+wordBookId+" 有 "+ wordIdList.size()+" 个单词");
+
         //查询对应的单词 英文 中文 不记得次数 单词状态
         LambdaQueryWrapper<Word> wordLambdaQueryWrapper = new LambdaQueryWrapper<>();
         wordLambdaQueryWrapper.in(Word::getWordid,wordIdList);
@@ -148,6 +153,9 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
 
     @Override
     public ResponseResult alterWordStatus(WordVo vo) {
+        if (vo.getWordstatus()!= SystemConstants.WORD_STATUS_NOT_REMEMBER && vo.getWordstatus() != SystemConstants.WORD_STATUS_HAVE_REMEMBER){
+            throw new SystemException(AppHttpCodeEnum.INPUT_ERROR);
+        }
         //查询是否在用户的单词记录中，有的话就修改状态，没有再详细查
         LambdaQueryWrapper<UserWordRecord> wordRecordWrapper = new LambdaQueryWrapper<>();
         String userId = JwtUtil.parseToken();

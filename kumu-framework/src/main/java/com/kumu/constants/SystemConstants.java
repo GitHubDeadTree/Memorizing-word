@@ -18,7 +18,7 @@ public class SystemConstants
     /**
      * 单词已记住
      */
-    public static final int WORD_STATUS_HAVE_REMEMBER = 0;
+    public static final int WORD_STATUS_HAVE_REMEMBER = 1;
 
     public static final int QUESTION_TYPE_LOOK_ENGLISH_SELECT_CHINESE = 1;
     public static final int QUESTION_TYPE_LOOK_CHINESE_SELECT_ENGLISH = 1;
