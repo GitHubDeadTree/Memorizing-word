@@ -224,7 +224,7 @@ public class TestServiceImpl implements TestService {
         redisCache.deleteObject("testList" + userId);
         redisCache.deleteObject("testPointer"+userId);
         redisCache.deleteObject("testFather" + userId);
-        return getTestRecord_detail(father);
+        return getTestRecord_detail(father.intValue());
     }
 
     @Override
