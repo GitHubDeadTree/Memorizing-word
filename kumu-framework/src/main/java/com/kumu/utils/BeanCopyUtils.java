@@ -1,8 +1,5 @@
 package com.kumu.utils;
 
-import com.kumu.domain.entity.Article;
-import com.kumu.domain.vo.HotArticleVo;
-import org.apache.poi.hssf.record.ObjRecord;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
@@ -32,11 +29,5 @@ public class BeanCopyUtils {
                 .collect(Collectors.toList());
     }
 
-    public static void main(String[] args) {
-        Article article = new Article();
-        article.setId(2L);
-        HotArticleVo vo = copyBean(article, HotArticleVo.class);
-        System.out.println(vo);
-    }
 
 }

@@ -5,7 +5,6 @@ import com.kumu.domain.entity.User;
 import com.kumu.enums.AppHttpCodeEnum;
 import com.kumu.exception.SystemException;
 import com.kumu.service.LoginService;
-import com.kumu.service.MenuService;
 import com.kumu.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,8 +20,6 @@ public class LoginController {
     private LoginService loginService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private MenuService menuService;
 
     @PostMapping("/register")
     public ResponseResult register(@RequestBody User user){
