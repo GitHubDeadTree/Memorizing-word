@@ -35,7 +35,6 @@ public class LoginController {
     }
     @PostMapping("/logout")
     public ResponseResult logOut(){
-        //System.out.println("controller: 登出");
         return loginService.logout();
     }
 

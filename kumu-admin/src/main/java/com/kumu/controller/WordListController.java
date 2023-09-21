@@ -17,12 +17,10 @@ public class WordListController {
     }
     @GetMapping("/get/wordList/memory")
     public ResponseResult getWordBookList_memorize(Integer wordBookId,Integer memoryNumber){
-        //System.out.println(111);
         return wordService.wordList_memorize(wordBookId,memoryNumber);
     }
     @PostMapping("/alter/wordStatus")
     public ResponseResult alterWordStatus(@RequestBody WordVo vo){
-        //System.out.println(111);
         return wordService.alterWordStatus(vo);
     }
 }
