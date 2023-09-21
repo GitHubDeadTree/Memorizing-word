@@ -23,7 +23,6 @@ public class UserWordBookRecord  {
     @TableId
     private Integer id;
 
-    
     private Long userid;
     
     private Integer wordbookid;
