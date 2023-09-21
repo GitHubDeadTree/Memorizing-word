@@ -1,13 +1,11 @@
 package com.kumu.enums;
 
-import org.springframework.stereotype.Repository;
-
 //枚举类 AppHttpCodeEnum，它定义了一系列的枚举常量，每个常量都表示一个 HTTP 响应状态码以及与之相关的消息
 public enum AppHttpCodeEnum {
     // 成功
     SUCCESS(200, "操作成功"),
 
-    HAVE_TEST(201,"例外的情况"),
+    ANOTHER_SITUATION(201,"例外的情况"),
     // 登录
     NEED_LOGIN(401, "需要登录后操作"),
     NO_OPERATOR_AUTH(403, "无权限操作"),
@@ -23,6 +21,7 @@ public enum AppHttpCodeEnum {
     EMAIL_NOT_NULL(511, "邮箱不能为空"),
     NICKNAME_EXIST(512, "昵称已存在"),
     INPUT_ERROR(505,"输入不合法"),
+    RECORD_ID_NOT_EXIST(505,"考试记录不存在"),
     LOGIN_ERROR(505, "用户名或密码错误");
 
     int code;

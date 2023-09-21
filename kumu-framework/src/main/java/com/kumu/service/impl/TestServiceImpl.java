@@ -9,6 +9,7 @@ import com.kumu.domain.entity.Word;
 import com.kumu.domain.entity.WordBookWord;
 import com.kumu.domain.vo.QuestionVo;
 import com.kumu.domain.vo.TestRecordListVo;
+import com.kumu.domain.vo.TestRecordVo;
 import com.kumu.domain.vo.WordVo;
 import com.kumu.enums.AppHttpCodeEnum;
 import com.kumu.exception.SystemException;
@@ -140,14 +141,16 @@ public class TestServiceImpl implements TestService {
 
         // 格式化日期和时间
         String formattedDateTime = currentDateTime.format(formatter);
-        // 创建一个日期格式化器
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date date = null;
+
+        Date date = new Date();
         try {
             date = dateFormat.parse(formattedDateTime);
+            System.out.println(date); // 输出日期对象
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
+
         userTestRecord.setTestdate(date)
                         .setTestscore(0)
                         .setWordcount(0);
@@ -181,10 +184,8 @@ public class TestServiceImpl implements TestService {
         String userId = JwtUtil.parseToken();
         int pointer = redisCache.getCacheObject("testPointer" + userId);
         List<QuestionVo> questionVoList = redisCache.getCacheList("testList" + userId);
-        if (pointer>= questionVoList.size()) return ResponseResult.okResult(AppHttpCodeEnum.HAVE_TEST);
+        if (pointer>= questionVoList.size()) return ResponseResult.okResult(AppHttpCodeEnum.ANOTHER_SITUATION);
         QuestionVo questionVo = questionVoList.get(pointer);
-        pointer++;
-        redisCache.updateCacheObject("testPointer" + userId,pointer);
         return ResponseResult.okResult(questionVo);
     }
 
@@ -200,6 +201,7 @@ public class TestServiceImpl implements TestService {
         }
         Integer father = redisCache.getCacheObject("testFather" + userId);
 
+        System.out.println("存结果单词id "+ testResult.getWordId());
         UserTestRecord userTestRecord = new UserTestRecord();
         userTestRecord.setFather(father)
                 .setWordid(testResult.getWordId())
@@ -214,6 +216,8 @@ public class TestServiceImpl implements TestService {
         LambdaQueryWrapper<UserTestRecord> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(UserTestRecord::getRecordid,father);
         userTestRecordService.update(fatherRecord,lambdaQueryWrapper);
+        int pointer = redisCache.getCacheObject("testPointer" + userId);
+        redisCache.updateCacheObject("testPointer" + userId,pointer+1);
         return ResponseResult.okResult();
     }
 
@@ -221,10 +225,11 @@ public class TestServiceImpl implements TestService {
     public ResponseResult endTest() {
         String userId = JwtUtil.parseToken();
         Integer father = redisCache.getCacheObject("testFather" + userId);
-        redisCache.deleteObject("testList" + userId);
-        redisCache.deleteObject("testPointer"+userId);
+        System.out.println("father的值 "+father);
+        //redisCache.deleteObject("testList" + userId);
+        //redisCache.deleteObject("testPointer"+userId);
         redisCache.deleteObject("testFather" + userId);
-        return getTestRecord_detail(father.intValue());
+        return ResponseResult.okResult(father);
     }
 
     @Override
@@ -236,16 +241,31 @@ public class TestServiceImpl implements TestService {
         testRecordLambdaQueryWrapper.eq(UserTestRecord::getUserid,userId);
         List<UserTestRecord> userTestRecordList = userTestRecordService.list(testRecordLambdaQueryWrapper);
         List<TestRecordListVo> testRecordList = BeanCopyUtils.copyBeanList(userTestRecordList, TestRecordListVo.class);
+        // 创建一个 SimpleDateFormat 对象，指定您期望的日期时间格式
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        for (int i=0;i<testRecordList.size();i++){
+            TestRecordListVo listVo = testRecordList.get(i);
+            listVo.setNumber(i+1);
+            listVo.setTestdateFormed(sdf.format(listVo.getTestdate()));
+        }
         return ResponseResult.okResult(testRecordList);
     }
 
     @Override
     public ResponseResult getTestRecord_detail(Integer recordId) {
         LambdaQueryWrapper<UserTestRecord> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        System.out.println("recordId"+recordId);
         lambdaQueryWrapper.eq(UserTestRecord::getFather,recordId);
         List<UserTestRecord> userTestRecordList = userTestRecordService.list(lambdaQueryWrapper);
         if (userTestRecordList.isEmpty()){
-            throw new SystemException(AppHttpCodeEnum.INPUT_ERROR);
+            lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            lambdaQueryWrapper.select(UserTestRecord::getRecordid);
+            lambdaQueryWrapper.eq(UserTestRecord::getRecordid,recordId);
+            UserTestRecord father = userTestRecordService.getOne(lambdaQueryWrapper);
+            if (father!= null){
+                return ResponseResult.okResult(AppHttpCodeEnum.ANOTHER_SITUATION);
+            }
+            else throw new SystemException(AppHttpCodeEnum.RECORD_ID_NOT_EXIST);
         }
         List<Integer> wordIdList = userTestRecordList.stream()
                 .map(UserTestRecord::getWordid)
@@ -261,6 +281,7 @@ public class TestServiceImpl implements TestService {
         // 在循环中使用 HashMap 查找
         for (int i=0;i<wordVoList.size();i++) {
             WordVo wordVo = wordVoList.get(i);
+            wordVo.setNumber(i);
             wordVo.setNumber(i + 1);
             UserTestRecord userTestRecord = userTestRecordMap.get(wordVo.getWordid());
             if (userTestRecord != null) {

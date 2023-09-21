@@ -15,6 +15,8 @@ public class TestRecordListVo {
     @TableId
     private Integer recordid;
 
+    private Integer Number;
+
     private Integer wordbookid;
 
     private Integer testscore;
@@ -22,6 +24,8 @@ public class TestRecordListVo {
     private Integer wordcount;
 
     private Date testdate;
+
+    private String testdateFormed;
 
 
 }
