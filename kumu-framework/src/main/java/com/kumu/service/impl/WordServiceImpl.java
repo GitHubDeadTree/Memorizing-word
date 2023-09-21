@@ -22,9 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import sun.java2d.opengl.WGLSurfaceData;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -47,39 +45,43 @@ public class WordServiceImpl extends ServiceImpl<WordMapper, Word> implements Wo
         queryWrapper.eq(WordBookWord::getWordbookid, wordBookId);
 
         List<Integer> wordIdList = wordBookWordService.list(queryWrapper).stream()
-                //将 WordBookWord 对象中的 wordid 字段提取出来
+                // 将 WordBookWord 对象中的 wordid 字段提取出来
                 .map(WordBookWord::getWordid)
                 .collect(Collectors.toList());
 
-        if (wordIdList.isEmpty()){
+        if (wordIdList.isEmpty()) {
             throw new SystemException(AppHttpCodeEnum.INPUT_ERROR);
         }
-        //System.out.println("单词书 "+wordBookId+" 有 "+ wordIdList.size()+" 个单词");
-        //查询对应的单词 英文 中文 不记得次数 单词状态
+
+    // 查询对应的单词 英文 中文 不记得次数 单词状态
         LambdaQueryWrapper<Word> wordLambdaQueryWrapper = new LambdaQueryWrapper<>();
-        wordLambdaQueryWrapper.in(Word::getWordid,wordIdList);
-        List<Word> wordList = new ArrayList<>();
-        wordList = list(wordLambdaQueryWrapper);
+        wordLambdaQueryWrapper.in(Word::getWordid, wordIdList);
+        List<Word> wordList = list(wordLambdaQueryWrapper);
         List<WordVo> wordVos = BeanCopyUtils.copyBeanList(wordList, WordVo.class);
-        System.out.println("wordVos中有 "+ wordVos.size()+" 个单词");
-        //查询用户的单词记录，如果有单词id，就得到 不记得次数和单词状态
+        System.out.println("wordVos中有 " + wordVos.size() + " 个单词");
+
+    // 查询用户的单词记录，如果有单词id，就得到 不记得次数和单词状态
         String userId = JwtUtil.parseToken();
         LambdaQueryWrapper<UserWordRecord> userWordRecordQueryWrapper = new LambdaQueryWrapper<>();
         userWordRecordQueryWrapper.eq(UserWordRecord::getUserid, userId);
         List<UserWordRecord> userWordRecordList = userWordRecordService.list(userWordRecordQueryWrapper);
-        for (var word : wordVos)
-        {
-            for (UserWordRecord userWordRecord : userWordRecordList)
-            {
-                if (word.getWordid() == userWordRecord.getWordid())
-                {
-                    word.setWordstatus(userWordRecord.getWordstatus());
-                    word.setAppearancecount(userWordRecord.getAppearancecount());
-                }
+
+        // 创建映射以存储用户单词记录，以便快速查找
+        Map<Integer, UserWordRecord> userWordRecordMap = new HashMap<>();
+        for (UserWordRecord userWordRecord : userWordRecordList) {
+            userWordRecordMap.put(userWordRecord.getWordid(), userWordRecord);
+        }
+
+    // 更新单词状态和不记得次数
+        for (WordVo word : wordVos) {
+            UserWordRecord userWordRecord = userWordRecordMap.get(word.getWordid());
+            if (userWordRecord != null) {
+                word.setWordstatus(userWordRecord.getWordstatus());
+                word.setAppearancecount(userWordRecord.getAppearancecount());
             }
         }
-        for (int i=1;i<=wordVos.size();i++)
-        {
+
+        for (int i=1;i<=wordVos.size();i++) {
             WordVo wordVo = wordVos.get(i - 1);
             wordVo.setNumber(i);
         }
