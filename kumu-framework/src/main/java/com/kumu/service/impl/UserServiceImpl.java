@@ -16,7 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-@Service("userService") //作为名为 "userService" 的 Bean 注册到 Spring 容器中，
+@Service("userService")
 public class UserServiceImpl extends ServiceImpl<UserMapper, User>  implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;

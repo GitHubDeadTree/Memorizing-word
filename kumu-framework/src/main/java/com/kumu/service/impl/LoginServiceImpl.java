@@ -27,10 +27,6 @@ import java.util.Objects;
 
 @Service
 public class LoginServiceImpl implements LoginService {
-    @Autowired
-    private UserMapper userMapper; // 假设 User 是您的实体类
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private RedisCache redisCache;
@@ -68,8 +64,7 @@ public class LoginServiceImpl implements LoginService {
         String userId = loginUser.getUser().getUserID().toString();
         String token = JwtUtil.createJWT(userId); //加密后的用户名就是token
         //把用户信息存入redis
-        //System.out.println("登录: "+userId);
-        redisCache.setCacheObject("login:"+ userId,loginUser); //存入的参数是键值对
+        redisCache.setCacheObject("login:"+ userId,loginUser);
         //把token跟userInfo 封装，返回
         UserInfoVo userInfoVo = BeanCopyUtils.copyBean(loginUser.getUser(),UserInfoVo.class);
         BlogUserLoginVo vo = new BlogUserLoginVo(token,userInfoVo);

@@ -66,19 +66,17 @@ public class TestServiceImpl implements TestService {
         LambdaQueryWrapper<WordBookWord> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(WordBookWord::getWordbookid, wordBookId);
 
-        // 使用 select 方法来选择需要查询的字段，这里选择了 WordBookWord 表的 wordid 字段
         queryWrapper.select(WordBookWord::getWordid);
 
-        // 直接查询 WordBookWord 表并将结果存入 wordIdList
+
         List<Integer> wordIdList = wordBookWordService.listObjs(queryWrapper, obj -> (Integer) obj);
         if (wordIdList.isEmpty() || wordIdList.size()< questionCount || wordIdList.size()<4){
             throw new SystemException(AppHttpCodeEnum.INPUT_ERROR);
         }
-        // 构建查询 Word 表的查询条件，使用 in 方法查询 wordIdList 中的单词id
+
         LambdaQueryWrapper<Word> wordLambdaQueryWrapper = new LambdaQueryWrapper<>();
         wordLambdaQueryWrapper.in(Word::getWordid, wordIdList);
 
-        // 查询 Word 表并将结果存入 wordList
         List<Word> wordList = wordService.list(wordLambdaQueryWrapper);
 
         Collections.shuffle(wordList);  //乱序处理单词表
@@ -114,11 +112,11 @@ public class TestServiceImpl implements TestService {
         double number = questionVoList.size() * percentage;
         int numberOfTypeOne = (int)number;
         int cnt_now = 0;
-        // 创建一个随机数生成器
+
         Random random = new Random();
         while (cnt_now< numberOfTypeOne ) {
             int randomIndex = random.nextInt(questionVoList.size());
-            // 随机索引获取列表中的元素
+
             QuestionVo questionVo = questionVoList.get(randomIndex);
             questionVo.setQuestionType(SystemConstants.QUESTION_TYPE_LOOK_ENGLISH_WRITE_CHINESE);
             cnt_now++;
@@ -133,7 +131,7 @@ public class TestServiceImpl implements TestService {
         UserTestRecord userTestRecord = new UserTestRecord();
         userTestRecord.setUserid(Long.parseLong(userId));
         userTestRecord.setWordbookid(wordBookId);
-        // 获取当前时间
+
         LocalDateTime currentDateTime = LocalDateTime.now();
 
         // 定义自定义格式
@@ -146,7 +144,6 @@ public class TestServiceImpl implements TestService {
         Date date = new Date();
         try {
             date = dateFormat.parse(formattedDateTime);
-            System.out.println(date); // 输出日期对象
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -211,13 +208,19 @@ public class TestServiceImpl implements TestService {
         userTestRecordService.save(userTestRecord);
         //修改father的单词数量
         LambdaQueryWrapper<UserTestRecord> testRecordLambdaQueryWrapper = new LambdaQueryWrapper<>();
+
         testRecordLambdaQueryWrapper.eq(UserTestRecord::getRecordid,father);
         UserTestRecord fatherRecord = userTestRecordService.getOne(testRecordLambdaQueryWrapper);
         fatherRecord.setWordcount(fatherRecord.getWordcount()+1);
-        if (testResult.getResult() == SystemConstants.WORD_STATUS_HAVE_REMEMBER) fatherRecord.setTestscore(fatherRecord.getTestscore()+1);
+
+        if (testResult.getResult() == SystemConstants.WORD_STATUS_HAVE_REMEMBER){
+            fatherRecord.setTestscore(fatherRecord.getTestscore()+1);
+        }
+        //更新母列的得分 单词数量
         LambdaQueryWrapper<UserTestRecord> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(UserTestRecord::getRecordid,father);
         userTestRecordService.update(fatherRecord,lambdaQueryWrapper);
+
         int pointer = redisCache.getCacheObject("testPointer" + userId);
         redisCache.updateCacheObject("testPointer" + userId,pointer+1);
         return ResponseResult.okResult();
@@ -243,7 +246,7 @@ public class TestServiceImpl implements TestService {
         testRecordLambdaQueryWrapper.eq(UserTestRecord::getUserid,userId);
         List<UserTestRecord> userTestRecordList = userTestRecordService.list(testRecordLambdaQueryWrapper);
         List<TestRecordListVo> testRecordList = BeanCopyUtils.copyBeanList(userTestRecordList, TestRecordListVo.class);
-        // 创建一个 SimpleDateFormat 对象，指定您期望的日期时间格式
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (int i=0;i<testRecordList.size();i++){
             TestRecordListVo listVo = testRecordList.get(i);
@@ -255,25 +258,38 @@ public class TestServiceImpl implements TestService {
 
     @Override
     public ResponseResult getTestRecord_detail(Integer recordId) {
+        // 构建查询条件
         LambdaQueryWrapper<UserTestRecord> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        System.out.println("recordId"+recordId);
-        lambdaQueryWrapper.eq(UserTestRecord::getFather,recordId);
+        lambdaQueryWrapper.eq(UserTestRecord::getFather, recordId);
+
+        // 查询记录列表
         List<UserTestRecord> userTestRecordList = userTestRecordService.list(lambdaQueryWrapper);
-        if (userTestRecordList.isEmpty()){
+
+        if (userTestRecordList.isEmpty()) {
+            // 如果记录列表为空，表示本次测试无单词
             lambdaQueryWrapper = new LambdaQueryWrapper<>();
             lambdaQueryWrapper.select(UserTestRecord::getRecordid);
-            lambdaQueryWrapper.eq(UserTestRecord::getRecordid,recordId);
+            lambdaQueryWrapper.eq(UserTestRecord::getRecordid, recordId);
+
+            // 尝试查询是否存在父记录
             UserTestRecord father = userTestRecordService.getOne(lambdaQueryWrapper);
-            if (father!= null){
+
+            if (father != null) {
+                // 存在父记录，返回对应的响应
                 return ResponseResult.okResult(AppHttpCodeEnum.ANOTHER_SITUATION);
+            } else {
+                // 不存在父记录，抛出异常
+                throw new SystemException(AppHttpCodeEnum.RECORD_ID_NOT_EXIST);
             }
-            else throw new SystemException(AppHttpCodeEnum.RECORD_ID_NOT_EXIST);
         }
+
         List<Integer> wordIdList = userTestRecordList.stream()
                 .map(UserTestRecord::getWordid)
                 .collect(Collectors.toList());
+
         LambdaQueryWrapper<Word> wordLambdaQueryWrapper = new LambdaQueryWrapper<>();
         wordLambdaQueryWrapper.in(Word::getWordid,wordIdList);
+
         List<Word> wordList = wordService.list(wordLambdaQueryWrapper);
         List<WordVo> wordVoList = BeanCopyUtils.copyBeanList(wordList, WordVo.class);
         // 将 userTestRecordList 转换为 HashMap
