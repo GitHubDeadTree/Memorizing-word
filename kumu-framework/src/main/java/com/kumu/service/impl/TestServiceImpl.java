@@ -186,6 +186,8 @@ public class TestServiceImpl implements TestService {
         List<QuestionVo> questionVoList = redisCache.getCacheList("testList" + userId);
         if (pointer>= questionVoList.size()) return ResponseResult.okResult(AppHttpCodeEnum.ANOTHER_SITUATION);
         QuestionVo questionVo = questionVoList.get(pointer);
+        questionVo.setNumber(pointer+1);
+        questionVo.setTotalNumber(questionVoList.size());
         return ResponseResult.okResult(questionVo);
     }
 
@@ -226,9 +228,9 @@ public class TestServiceImpl implements TestService {
         String userId = JwtUtil.parseToken();
         Integer father = redisCache.getCacheObject("testFather" + userId);
         System.out.println("father的值 "+father);
-        //redisCache.deleteObject("testList" + userId);
-        //redisCache.deleteObject("testPointer"+userId);
-        redisCache.deleteObject("testFather" + userId);
+        redisCache.deleteObject("testList" + userId);
+        redisCache.deleteObject("testPointer"+userId);
+        //redisCache.deleteObject("testFather" + userId);
         return ResponseResult.okResult(father);
     }
 

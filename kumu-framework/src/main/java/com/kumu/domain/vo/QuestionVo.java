@@ -20,4 +20,8 @@ public class QuestionVo implements Serializable {
     private WordVo rightAnswer;
 
     private List<WordVo> errorAnswer;
+
+    private Integer number;
+
+    private Integer totalNumber;
 }
